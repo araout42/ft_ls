@@ -1,14 +1,17 @@
 #include "ft_ls.h"
 
-int main(int ac, char **av)
+int					main(int ac, char **av)
 {
-	int	i;
-	char **files;
-
-	i = -1;
-	printf("OPTIONS : %s\n", ft_get_options(ac, av));
-	files = ft_get_files(ac, av);
-	while (files[++i])
-		printf("FILE : %s\n", files[i]);
+	char			**files;
+	char			*options;
+	struct dirent	**dir;
+//	int				i;
+	
+//	i = 0;
+	options = ft_get_options(ac, av);
+	printf("%s\n", options);
+	files = ft_get_files_input(ac, av);
+	dir = ft_get_dir(files);
+	printf("%s  ",(*dir)->d_name);
 	return (0);
 }
