@@ -60,5 +60,3 @@ char			 **ft_get_files_input(int ac, char **av)
 	}
 return (files);
 }
-
-

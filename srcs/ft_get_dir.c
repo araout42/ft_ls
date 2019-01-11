@@ -59,22 +59,17 @@ t_list					*ft_get_dir(char **files)
 	t_list				*list;
 	t_list				*head;
 
-	i = 0;
 	list = NULL;
-	while (files[i])
+	i = 0;
+	head = ft_create_list(files[0]);
+	list = head;
+	while (files[++i])
 	{
-		if (list)
-			list->next = ft_create_list(files[i]);
-		else
-		{
-			list = ft_create_list(files[i]);
-			head = list;
-		}
-		if (list != NULL)
-			list = list->next;
-		else
+		list->next = ft_create_list(files[i]);
+		if (!list->next)
 			perror(strerror(errno));
-		i++;
+		else
+			list = list->next;
 	}
 	return (head);
 }

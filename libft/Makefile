@@ -83,6 +83,7 @@ SOURCES = ft_atoi.c\
 		  get_next_line.c\
 		  ft_sqrt.c\
 		  ft_get_bits.c\
+		  ft_list_push_back.c\
 
 
 
