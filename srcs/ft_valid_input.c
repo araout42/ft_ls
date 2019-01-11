@@ -52,7 +52,13 @@ char			 **ft_get_files_input(int ac, char **av)
 			j++;
 		}
 	}
-	return (files);
+	if (!(*files))
+	{
+		if (!(*files = ft_strnew(1)))
+			return (NULL);
+		**files = '.';
+	}
+return (files);
 }
 
 

@@ -10,6 +10,7 @@ LIB = libft/
 SOURCES = 	srcs/main.c\
 			srcs/ft_valid_input.c\
 			srcs/ft_get_dir.c\
+			srcs/ft_display.c\
 
 OBJECT = $(SOURCES:.c=.o)
 

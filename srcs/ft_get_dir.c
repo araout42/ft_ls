@@ -1,42 +1,80 @@
 #include "ft_ls.h"
 
-static DIR		**ft_open_dir(char **files)
+static struct stat		*ft_get_file_info(struct dirent *dir, char *file)
 {
-	int			i;
-	DIR			**dirs;
-	int			j;
+	struct stat			*buf;
+	char				*pathname;
+	char				*tmp;
+	int					res;
 
-	j = 0;
-	i = 0;
-	while (files[i])
-		i++;
-	dirs = (DIR **)ft_memalloc(sizeof(*dirs) * i);
-	i--;
-	while (j <= i)
+	buf = (struct stat *)ft_memalloc(sizeof(*buf));
+	if (dir != NULL)
 	{
-		dirs[j] = opendir(files[j]);
-		if (dirs[j] == NULL)
-		{
-			perror("ERROR : ");
-			j--;
-		}
-		j++;
+		pathname = ft_strjoin(file, "/");
+		tmp = pathname;
+		pathname = ft_strjoin(dir->d_name, file);
+		res = lstat(pathname, buf);
+		ft_memdel((void **)&tmp);
+		ft_memdel((void **)&pathname);
+		if (res < 0)
+			return (NULL);
+		return(buf);
 	}
-	return (dirs);
+	else
+		pathname = file;
+	res = lstat(pathname, buf);
+	if (res < 0)
+		return (NULL);
+	return (buf);
 }
 
-struct dirent	**ft_get_dir(char **files)
+static t_list			*ft_create_list(char *files)
 {
-	int			i;
-	DIR			**dirs;
-	struct	dirent **s_dirs;
+	t_list				*list;
+	t_dir				*d;
+	int					i;
 	
-	while (files[i])
-		i++;
-	s_dirs = (struct dirent **)ft_memalloc(sizeof(*s_dirs) * i);
-	dirs = ft_open_dir(files);
+	i = -1;
+	d = (t_dir *)ft_memalloc(sizeof(*d) * MAX);
+	d->name = files;
+	if (!(d->dir = (struct dirent **)ft_memalloc(sizeof(d->dir) * MAX)))
+		return (NULL);
+	if (!(d->lstats = (struct stat **)ft_memalloc(sizeof(d->lstats) * MAX)))
+		return (NULL);
+	if ((d->dd = opendir(files)) == NULL)
+	{
+		if (!(d->lstats[i] = ft_get_file_info(NULL, files)))
+			return (NULL);
+	}
+	else
+		while ((d->dir[++i] = readdir(d->dd)) != NULL)
+			d->lstats[i] = ft_get_file_info(d->dir[i], files);
+	list = ft_lstnew((void *)d, sizeof(*d));
+	return (list);
+}
+
+t_list					*ft_get_dir(char **files)
+{
+	int					i;
+	t_list				*list;
+	t_list				*head;
+
 	i = 0;
-	while ((*s_dirs = readdir(*dirs)) != NULL)
-		printf("%s\n", (*s_dirs)->d_name);
-	return (s_dirs);
+	list = NULL;
+	while (files[i])
+	{
+		if (list)
+			list->next = ft_create_list(files[i]);
+		else
+		{
+			list = ft_create_list(files[i]);
+			head = list;
+		}
+		if (list != NULL)
+			list = list->next;
+		else
+			perror(strerror(errno));
+		i++;
+	}
+	return (head);
 }
