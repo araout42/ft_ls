@@ -2,31 +2,28 @@
 
 void		ft_display(t_list *head)
 {
-	struct dirent	*dir;
+	struct dirent	**dir;
 	t_dir			*dirs_struct;
 	int				i;
 	t_list			*list;
-
+	int				j;
+	
+	j = 0;
+	i = -1;
 	list = head;
 	while (list)
 	{
-		i = 0;
 		dirs_struct = list->content;
-		dir = dirs_struct->dir[i];
-		if (dir != NULL && (ft_list_size(head) > 1 || errno != 0))
-			printf("%s :\n", dirs_struct->name);
-		while (dir || dirs_struct->lstats[i])
-		{
-			if (!dir)
-				printf("%s\n", dirs_struct->name);
-			if (dirs_struct->dir[i] && dir->d_name[0] != '.')
-				printf("%s  ", dir->d_name);
-			else if (dir->d_name[0] !=  '.')
-				printf("%s", dir->d_name);
-			dir = dirs_struct->dir[i++];
-		}
-		list = list->next;
-		if (list)
+		dir = dirs_struct->dir;
+		if ((list->next && j++) || (j != 0))
+				printf("%s:\n", dirs_struct->name);
+		while (dir[++i])
+			printf("%s  ",dir[i]->d_name);
+		if (list->next)
 			printf("\n\n");
+		else
+		printf("\n");
+		i = -1;
+		list = list->next;
 	}
 }

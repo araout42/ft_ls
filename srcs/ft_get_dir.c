@@ -44,7 +44,7 @@ static t_list			*ft_create_list(char *files)
 		return (NULL);
 	if ((d->dd = opendir(files)) == NULL)
 	{
-		if (!(d->lstats[i] = ft_get_file_info(NULL, files)))
+		if (!(d->lstats[0] = ft_get_file_info(NULL, files)))
 			return (NULL);
 	}
 	else

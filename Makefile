@@ -11,6 +11,8 @@ SOURCES = 	srcs/main.c\
 			srcs/ft_valid_input.c\
 			srcs/ft_get_dir.c\
 			srcs/ft_display.c\
+			srcs/ft_sort_tabs.c\
+			srcs/is_before.c\
 
 OBJECT = $(SOURCES:.c=.o)
 

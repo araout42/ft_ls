@@ -9,6 +9,7 @@ int					main(int ac, char **av)
 	//options = ft_get_options(ac, av);
 	files = ft_get_files_input(ac, av);
 	list = ft_get_dir(files);
+	ft_sort_root(list, 1);
 	ft_display(list);
 	return (0);
 }
