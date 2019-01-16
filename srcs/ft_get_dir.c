@@ -35,7 +35,8 @@ static t_list			*ft_create_list(char *files)
 	int					i;
 	
 	i = -1;
-	d = (t_dir *)ft_memalloc(sizeof(*d) * MAX);
+	if (!(d = (t_dir *)ft_memalloc(sizeof(*d) * MAX)))
+		return (NULL);
 	d->name = files;
 	if (!(d->dir = (struct dirent **)ft_memalloc(sizeof(d->dir) * MAX)))
 		return (NULL);
@@ -59,17 +60,23 @@ t_list					*ft_get_dir(char **files)
 	t_list				*list;
 	t_list				*head;
 
-	list = NULL;
 	i = 0;
-	head = ft_create_list(files[0]);
-	list = head;
-	while (files[++i])
+	errno = 0;
+	head = NULL;
+	while (head == NULL && files[i])
 	{
-		list->next = ft_create_list(files[i]);
-		if (!list->next)
-			perror(strerror(errno));
+		if ((head = ft_create_list(files[i])) == NULL)
+			perror(files[i]);
+		i++;
+	}
+	list = head;
+	while (files[i])
+	{
+		if ((list->next = ft_create_list(files[i])) == NULL)
+			perror(files[i]);
 		else
 			list = list->next;
+		i++;
 	}
 	return (head);
 }

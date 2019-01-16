@@ -13,16 +13,20 @@ void		ft_display(t_list *head)
 		i = 0;
 		dirs_struct = list->content;
 		dir = dirs_struct->dir[i];
-		printf("%s :\n", dirs_struct->name);
-		while (dir)
+		if (dir != NULL && (ft_list_size(head) > 1 || errno != 0))
+			printf("%s :\n", dirs_struct->name);
+		while (dir || dirs_struct->lstats[i])
 		{
-			if (dirs_struct->dir[i + 1] && dir->d_name[0] != '.')
+			if (!dir)
+				printf("%s\n", dirs_struct->name);
+			if (dirs_struct->dir[i] && dir->d_name[0] != '.')
 				printf("%s  ", dir->d_name);
 			else if (dir->d_name[0] !=  '.')
 				printf("%s", dir->d_name);
 			dir = dirs_struct->dir[i++];
 		}
 		list = list->next;
-		printf("\n\n");
+		if (list)
+			printf("\n\n");
 	}
 }
