@@ -1,24 +1,27 @@
-NAME = ft_ls 
+NAME = ft_ls
 
 CFLAGS = -Wall -Wextra -Werror
 
-HEADERS = 	fillit.h\
+HEADERS = 	srcs/ft_ls.h\
 			libft/libft.h\
 
 LIB = libft/
 
-SOURCES = 	srcs/main.c\
-			srcs/ft_valid_input.c\
-			srcs/ft_get_dir.c\
+SOURCES = 	srcs/dir.c\
+			srcs/error.c\
+			srcs/ft_flag_l.c\
+			srcs/ft_ls.c\
+			srcs/ft_struct.c\
+			srcs/ft_utils.c\
 			srcs/ft_display.c\
-			srcs/ft_sort_tabs.c\
-			srcs/is_before.c\
+			srcs/ft_sort.c\
+			srcs/ft_sort_2.c\
 
 OBJECT = $(SOURCES:.c=.o)
 
 $(NAME): $(LIB) $(OBJECT)
 		make -C libft/
-		gcc -o $(NAME) $(CFLAGS) $(OBJECT) libft/libft.a -L./libft/
+		gcc -o $(NAME) $(CFLAGS) $(OBJECT) libft/libftprintf.a -L./libft
 
 all: $(NAME)
 
