@@ -1,34 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   error.c                                            :+:      :+:    :+:   */
+/*   conversion.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mgheraie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/02/13 19:31:27 by mgheraie          #+#    #+#             */
-/*   Updated: 2019/03/07 07:17:29 by mgheraie         ###   ########.fr       */
+/*   Created: 2019/02/27 23:07:16 by mgheraie          #+#    #+#             */
+/*   Updated: 2019/03/07 03:22:30 by mgheraie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_ls.h"
+#include "printf.h"
+#include "libft.h"
 
-DIR			*open_error(char *filename)
+int	ft_is_arg(t_printf *pf)
 {
-	ft_printf("ft_ls: %s: %s\n", filename, strerror(errno));
-	ft_strdel(&filename);
+	if (*pf->format == 'd' || *pf->format == 'i' || *pf->format == 'o'
+			|| *pf->format == 'x' || *pf->format == 'X' || *pf->format == 'u'
+			|| *pf->format == 's' || *pf->format == 'p' || *pf->format == 'c'
+			|| *pf->format == 'f')
+		return (1);
 	return (0);
-}
-
-void		*read_error(char *name)
-{
-	ft_printf("ft_ls: %s: %s\n", name, strerror(errno));
-	ft_strdel(&name);
-	return (NULL);
-}
-
-uint16_t	error_flag(char c)
-{
-	ft_printf("ls : illegal option -- %c \n", c);
-	ft_printf("usage: ls [-FRacilmrtu] [file ...]\n");
-	return (4096);
 }

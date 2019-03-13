@@ -1,34 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   error.c                                            :+:      :+:    :+:   */
+/*   ft_isalnum.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mgheraie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/02/13 19:31:27 by mgheraie          #+#    #+#             */
-/*   Updated: 2019/03/07 07:17:29 by mgheraie         ###   ########.fr       */
+/*   Created: 2018/11/09 12:26:54 by mgheraie          #+#    #+#             */
+/*   Updated: 2019/03/07 03:24:00 by mgheraie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_ls.h"
+#include "libft.h"
 
-DIR			*open_error(char *filename)
+int		ft_isalnum(int c)
 {
-	ft_printf("ft_ls: %s: %s\n", filename, strerror(errno));
-	ft_strdel(&filename);
+	if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')
+			|| (c >= '0' && c <= '9'))
+		return (1);
 	return (0);
-}
-
-void		*read_error(char *name)
-{
-	ft_printf("ft_ls: %s: %s\n", name, strerror(errno));
-	ft_strdel(&name);
-	return (NULL);
-}
-
-uint16_t	error_flag(char c)
-{
-	ft_printf("ls : illegal option -- %c \n", c);
-	ft_printf("usage: ls [-FRacilmrtu] [file ...]\n");
-	return (4096);
 }

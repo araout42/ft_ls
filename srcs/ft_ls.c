@@ -6,78 +6,101 @@
 /*   By: mgheraie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/11 16:32:16 by mgheraie          #+#    #+#             */
-/*   Updated: 2019/02/18 09:01:35 by araout           ###   ########.fr       */
+/*   Updated: 2019/03/12 19:59:29 by araout           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
-static t_dir			*get_rep(char **av, uint16_t flag)
+void				ft_cleandir(t_dir *rep)
+{
+	ft_strdel(&(rep->name));
+	ft_strdel(&(rep->pathname));
+	free(rep);
+}
+
+void				print_dir(t_list *head, uint16_t flag, DIR *dir)
+{
+	ft_sort_root(&head, flag);
+	ft_display_root(head, flag);
+	closedir(dir);
+	ft_clean(&head);
+}
+
+t_dir				*get_rep(int ac, char **av, uint16_t flag)
 {
 	t_dir		*rep;
 	DIR			*dir;
+	t_list		*head;
 
 	dir = NULL;
-	if (!*av)
-		rep = read_dir(".", flag, dir);
+	head = NULL;
+	rep = NULL;
+	if (*av == NULL)
+		head = read_dir(".", flag, dir, NULL);
 	else
 	{
-		while(*av)
+		while (*av)
 		{
-			if (flag == 2048)
-			{
-				rep = read_dir("-", flag, dir);
-				flag -= 2048;
-				}
-			else
-				rep = read_dir(*av, flag, dir);
+			(ac > 1) ? flag = flag | MULTIARG : 0;
+			(ac == 1 && flag & MULTIARG) ? flag -= MULTIARG : 0;
+			if (!(head = read_dir(*av, flag, dir, NULL)))
+				ac--;
 			av++;
+			ac--;
 		}
 	}
 	return (rep);
 }
 
-static t_list			*to_list(t_dir *rep)
+void				parsdir(char **av)
 {
-	t_list		*head;
-	t_list		*curr;
+	DIR		*tmp;
+	char	chk;
 
-	if (rep)
+	chk = 0;
+	while (*av)
 	{
-		if (!(head = ft_lstnew((void *)rep, sizeof(*rep))))
-			return (NULL);
-		curr = head;
-		while (rep->next)
+		if (!(tmp = opendir(*av)))
 		{
-			if (!(curr->next = ft_lstnew((void *)rep->next, sizeof(*(rep->next)))))
-				return (NULL);
-			rep = rep->next;
-			curr = curr->next;
+			chk = 1;
+			if (errno != 20)
+			{
+				perror(*av);
+				g_return = 1;
+			}
+			else
+			{
+				ft_put_name(*av, DT_REG, 0, 0);
+				write(1, "\n", 1);
+			}
 		}
-		return (head);
+		else
+			closedir(tmp);
+		av++;
 	}
-	else 
-		return (NULL);
 }
 
-int						main(int ac, char **av)
+int					main(int ac, char **av)
 {
 	uint16_t	flag;
 	t_dir		*rep;
-	t_list		*head;
 
-	head = NULL;
+	ac--;
 	rep = NULL;
-	ac++;
 	av++;
 	flag = getflag(av);
-	if(flag == 4096)
+	if (flag == 4096)
 		return (-1);
-	while(*av && ft_strlen(*av) > 1 && **av == '-' )
+	while (*av && ft_strlen(*av) > 1 && **av == '-')
+	{
+		if (ft_strchr(*av, 'G') != 0)
+			flag = flag | FLAGG;
 		av++;
-	rep = get_rep(av, flag);
-	head = to_list(rep);
-	rep = (t_dir *)head->content;
-	ft_sort_root(&head, flag);
-	ft_display_root(head, flag);
+		ac--;
+	}
+	parsdir(av);
+	rep = get_rep(ac, av, flag);
+	write(1, "\n", 2);
+	return (g_return);
 }

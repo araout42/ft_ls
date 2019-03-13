@@ -6,36 +6,30 @@
 /*   By: araout <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/18 04:34:41 by araout            #+#    #+#             */
-/*   Updated: 2019/02/18 07:58:46 by araout           ###   ########.fr       */
+/*   Updated: 2019/03/12 19:55:06 by araout           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
-static void			sort_ascii(t_list **head)
+static void		ft_swap_n(t_list **head, int j, int i)
 {
-	t_dir	*rep;
-	t_list	*curr;
+	t_list	*to_i;
+	t_list	*to_j;
 	void	*tmp;
-	t_dir	*rep_next;
 
-	curr = *head;
-	while (curr && curr->next && (rep = (t_dir *)curr->content)
-			&& (rep_next = (t_dir *)curr->next->content))
-	{
-		if (ft_strcmp(rep->pathname, rep_next->pathname) > 0)
-		{
-			tmp = curr->content;
-			curr->content = curr->next->content;
-			curr->next->content = tmp;
-			curr = *head;
-		}
-		curr = curr->next;
-	}
+	to_i = *head;
+	to_j = *head;
+	while (i-- > 0)
+		to_i = to_i->next;
+	while (j-- > 0)
+		to_j = to_j->next;
+	tmp = to_i->content;
+	to_i->content = to_j->content;
+	to_j->content = tmp;
 }
 
-
-static void			sort_flag_rev(t_list **head)
+static void		sort_flag_rev(t_list **head)
 {
 	t_list	*curr;
 	t_list	*end;
@@ -58,24 +52,12 @@ static void			sort_flag_rev(t_list **head)
 		i--;
 	}
 }
-/*
-static void			sort_flag_t(t_dir **rep)
+
+int				ft_sort_root(t_list **head, uint16_t flag)
 {
-}
-
-static void			sort_flag_c(t_dir **rep)
-{
-}
-*/
-
-void				ft_sort_root(t_list **head, uint16_t flag)
-{
-	if (!(flag & FLAGT) && !(flag & FLAGC))
-		sort_ascii(head);
-
-
-
-
-	if ((flag & FLAGREV))
-		sort_flag_rev(head);
+	*head = mergesorti(*head, compare_ascii);
+	if (flag & FLAGT)
+		*head = mergesorti(*head, compare_time);
+	((flag & FLAGREV)) ? sort_flag_rev(head) : 0;
+	return (1);
 }

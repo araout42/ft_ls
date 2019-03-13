@@ -6,51 +6,78 @@
 /*   By: mgheraie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/14 01:46:57 by mgheraie          #+#    #+#             */
-/*   Updated: 2019/02/18 06:59:57 by araout           ###   ########.fr       */
+/*   Updated: 2019/03/12 19:49:10 by araout           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
-static DIR		*open_dir(char *name)
+DIR				*open_dir(char *name)
 {
 	DIR			*dir;
 
 	if (!(dir = opendir(name)))
 	{
-		if (errno == 20)
-			ft_printf("%s\n", name);
-		else
-			perror(name);
+		g_return = 1;
 		return (NULL);
 	}
 	return (dir);
 }
 
-t_dir			*read_dir(char *name, uint16_t flag, DIR *dir)
+t_list			*create_elem(t_dir *dir)
 {
-	struct dirent	*rep;
-	t_dir			*fst;
-	t_dir			*tmp;
+	t_list	*new;
 
+	if (!(new = (t_list*)malloc(sizeof(t_list))))
+		return (NULL);
+	new->content = (void*)dir;
+	new->content_size = SOD;
+	new->next = NULL;
+	return (new);
+}
+
+t_list			*new_elem(t_dir *dir, t_list **head)
+{
+	t_list	*lst;
+
+	if (!(*head))
+		*head = create_elem(dir);
+	else
+	{
+		lst = *head;
+		while (lst->next)
+			lst = lst->next;
+		if (!(lst->next = create_elem(dir)))
+			return (NULL);
+	}
+	return (*head);
+}
+
+t_list			*read_dir(char *name, uint16_t flag, DIR *dir, t_dir *r)
+{
+	DIR				*tmp;
+	struct dirent	*open_rep;
+	t_list			*head;
+
+	head = NULL;
 	if (!(dir = open_dir(name)))
 		return (NULL);
-	while ((rep = readdir(dir)))
+	(flag & MULTIARG) ? ft_printf("%s:\n", name) : 0;
+	while ((open_rep = readdir(dir)))
 	{
-		if (ft_strcmp(rep->d_name, ".") == 0)
-		{
-			if (!(fst = init_lst(rep, name, flag)))
-				return (NULL);
-			tmp = fst;
-		}
+		if (!(tmp = opendir(open_rep->d_name))
+				&& errno == EACCES && (!(flag & FLAGI)) && !(flag & FLAGL))
+			perror(open_rep->d_name);
 		else
 		{
-			if (!(tmp->next = init_lst(rep, name, flag)))
+			if (!(r = init_lst(open_rep, name, flag)))
 				return (NULL);
-			while (tmp->next)
-				tmp = tmp->next;
+			if (!(head = new_elem(r, &head)))
+				return (NULL);
 		}
+		(tmp) ? closedir(tmp) : 0;
 	}
-	closedir(dir);
-	return (fst);
+	print_dir(head, flag, dir);
+	(flag & MULTIARG) ? ft_printf("\n\n") : 0;
+	return (head);
 }

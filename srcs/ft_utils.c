@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: mgheraie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/02/11 18:16:01 by mgheraie          #+#    #+#             */
-/*   Updated: 2019/02/17 22:22:26 by araout           ###   ########.fr       */
+/*   Created: 2019/02/18 10:18:10 by mgheraie          #+#    #+#             */
+/*   Updated: 2019/03/12 19:27:23 by araout           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,15 +14,16 @@
 
 int			ft_isflagls(char c)
 {
-	if (c != 'l' && c != 'R' && c != 'a' && c != 'r' && c != 't' && c != 'F' &&
-			c != 'c' && c != 'i' && c != 'u' && c != '1' && c != 'm')
+	if (c != 'l' && c != 'R' && c != 'a' && c != 'r' && c != 't' && c != 'F'
+			&& c != 'c' && c != 'i' && c != 'u' && c != '1' && c != 'm'
+			&& c != 'G')
 		return (-1);
 	return (1);
 }
 
 void		ft_checkflag(char c, uint16_t *flag)
 {
-	if (c == 'l' && !(*flag & FLAGL))
+	if (c == 'l' && !(*flag & FLAGL) && ((*flag & FLAGM) ? *flag -= FLAGM : 1))
 		*flag = *flag | FLAGL;
 	else if (c == 'R' && !(*flag & FLAGR))
 		*flag = *flag | FLAGR;
@@ -42,8 +43,8 @@ void		ft_checkflag(char c, uint16_t *flag)
 		*flag = *flag | FLAGU;
 	else if (c == '1' && !(*flag & FLAG1))
 		*flag = *flag | FLAG1;
-	else if (c == 'm' && !(*flag & FLAGM))
-		*flag = *flag | FLAGM;
+	else if (c == 'm' && !(*flag & FLAGM) && (*flag = *flag | FLAGM))
+		(*flag & FLAGL) ? *flag -= FLAGL : 0;
 }
 
 uint16_t	getflag(char **av)
@@ -52,17 +53,14 @@ uint16_t	getflag(char **av)
 	size_t		i;
 	size_t		j;
 
-	i = 0;
+	i = -1;
 	flag = 0;
-	while (av[i])
+	while (av[++i])
 	{
-		if(ft_strlen(av[i]) == 1 && !ft_strcmp(av[i], "-"))
-		{
-			flag = flag | 2048;
-			return (flag);
-		}
-		j = 0;
-		while (av[i][j])
+		if (ft_strlen(av[i]) == 1 && !ft_strcmp(av[i], "-"))
+			return (2048);
+		j = -1;
+		while (av[i][++j])
 		{
 			if (av[i][0] != '-')
 				return (flag);
@@ -71,9 +69,7 @@ uint16_t	getflag(char **av)
 				ft_checkflag(av[i][j], &flag);
 			else
 				return (error_flag(av[i][j]));
-			j++;
 		}
-		i++;
 	}
 	return (flag);
 }
